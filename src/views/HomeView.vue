@@ -1,5 +1,7 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Layout from '@/layouts/Layout.vue'
+</script>
 
 <template>
-  <main class="container p-6">Hello world</main>
+  <Layout>Hello world</Layout>
 </template>
