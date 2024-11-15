@@ -1,5 +1,5 @@
 <script setup lang="ts"></script>
 
 <template>
-    <main>Hello world</main>
+  <main class="container p-6">Hello world</main>
 </template>
