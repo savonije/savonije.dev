@@ -6,8 +6,8 @@ import { RouterLink } from 'vue-router'
   <header class="p-6 flex justify-between">
     <RouterLink to="/" class="text-white text-xl no-underline"> savonije.dev </RouterLink>
     <nav class="flex gap-3">
-      <RouterLink to="/shots">Shots</RouterLink>
-      <RouterLink to="/clips">Clips</RouterLink>
+      <!-- <RouterLink to="/shots">Shots</RouterLink>
+      <RouterLink to="/clips">Clips</RouterLink> -->
       <a href="https://dvd.savonije.dev">DVD's</a>
     </nav>
   </header>
