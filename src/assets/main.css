@@ -20,3 +20,7 @@ body {
     background-position: 0% 50%;
   }
 }
+
+a {
+  @apply underline underline-offset-8;
+}
