@@ -3,5 +3,5 @@ import Layout from '@/layouts/Layout.vue'
 </script>
 
 <template>
-  <Layout>Shots</Layout>
+  <Layout>Shots page</Layout>
 </template>
