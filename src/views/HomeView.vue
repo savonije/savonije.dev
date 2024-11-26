@@ -17,7 +17,7 @@ import Layout from '@/layouts/Layout.vue'
       <div class="text-xl flex gap-6">
         <a href="https://www.linkedin.com/in/kevinsavonije/" target="_blank">LinkedIn</a>
         |
-        <a href="mailto:kevin@savonije.dev" target="_blank">Email</a>
+        <a href="mailto:kevinsavonije@gmail.com" target="_blank">Email</a>
       </div>
     </div>
   </Layout>
