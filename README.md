@@ -1,3 +1,5 @@
+[![Netlify Status](https://api.netlify.com/api/v1/badges/400a49ef-7802-4a22-a1ca-21a0442995a7/deploy-status)](https://app.netlify.com/sites/savonije/deploys)
+
 # savonije.dev
 
 This template should help get you started developing with Vue 3 in Vite.
