@@ -14,6 +14,8 @@ import { RouterLink } from 'vue-router'
 </template>
 
 <style>
+@reference "tailwindcss";
+
 header {
   a {
     @apply text-white;

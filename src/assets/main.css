@@ -1,6 +1,92 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@theme {
+  --color-black-50: #f7f7f8;
+  --color-black-100: #f0eef0;
+  --color-black-200: #dcd9de;
+  --color-black-300: #bdb8c1;
+  --color-black-400: #99919f;
+  --color-black-500: #7d7384;
+  --color-black-600: #665d6c;
+  --color-black-700: #534c58;
+  --color-black-800: #48414b;
+  --color-black-900: #3e3941;
+  --color-black-950: #19171a;
+  --color-black: #19171a;
+
+  --color-shark-50: #f6f7f9;
+  --color-shark-100: #eceef2;
+  --color-shark-200: #d4dae3;
+  --color-shark-300: #afbaca;
+  --color-shark-400: #8495ac;
+  --color-shark-500: #657892;
+  --color-shark-600: #506079;
+  --color-shark-700: #414e63;
+  --color-shark-800: #394353;
+  --color-shark-900: #333b47;
+  --color-shark-950: #252a34;
+  --color-shark: #252a34;
+
+  --color-gray-50: #f8f8f8;
+  --color-gray-100: #eaeaea;
+  --color-gray-200: #dcdcdc;
+  --color-gray-300: #bdbdbd;
+  --color-gray-400: #989898;
+  --color-gray-500: #7c7c7c;
+  --color-gray-600: #656565;
+  --color-gray-700: #525252;
+  --color-gray-800: #464646;
+  --color-gray-900: #3d3d3d;
+  --color-gray-950: #292929;
+  --color-gray: #eaeaea;
+
+  --color-red-50: #fff0f2;
+  --color-red-100: #ffe2e7;
+  --color-red-200: #ffcad5;
+  --color-red-300: #ff9fb3;
+  --color-red-400: #ff698b;
+  --color-red-500: #ff2e63;
+  --color-red-600: #ed1153;
+  --color-red-700: #c80847;
+  --color-red-800: #a80942;
+  --color-red-900: #8f0c3f;
+  --color-red-950: #50011e;
+  --color-red: #ff2e63;
+
+  --color-teal-50: #effefc;
+  --color-teal-100: #c8fff8;
+  --color-teal-200: #92fdf2;
+  --color-teal-300: #53f5ea;
+  --color-teal-400: #20e1db;
+  --color-teal-500: #08d9d6;
+  --color-teal-600: #039c9e;
+  --color-teal-700: #077c7e;
+  --color-teal-800: #0b6264;
+  --color-teal-900: #0e5153;
+  --color-teal-950: #012e32;
+  --color-teal: #08d9d6;
+
+  --font-body: 'Roboto', sans-serif;
+  --font-heading: 'Josefin Sans', sans-serif;
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
 
 body {
   @apply h-[100vh] text-white leading-loose;
