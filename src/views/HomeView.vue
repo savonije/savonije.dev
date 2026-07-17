@@ -210,7 +210,7 @@ onBeforeUnmount(() => {
       </div>
       <p class="mb-10 mt-7 max-w-md text-lg leading-relaxed text-fog-muted">
         Leuk dat je langskomt. Ik ben een front-end developer uit Goes en bouw snelle, verzorgde
-        webervaringen met veel oog voor de kleine details. Momenteel werk ik bij
+        webervaringen met veel oog voor details en toegankelijkheid. Momenteel werk ik bij
         <a
           class="text-accent-bright no-underline hover:text-accent-soft"
           href="https://www.23g.nl"
