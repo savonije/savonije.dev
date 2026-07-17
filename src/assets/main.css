@@ -13,6 +13,10 @@
   --font-display: 'Space Grotesk', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
+  --text-shadow-glow: 0 0 40px rgba(255, 60, 60, 0.25);
+
+  --tracking-btn: 1px;
+
   --animate-hero-in: heroFadeUp 0.7s ease both;
 }
 
