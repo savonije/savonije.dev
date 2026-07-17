@@ -26,16 +26,32 @@ const initGrid = (cv: HTMLCanvasElement) => {
 
   const acc: [number, number, number] = [255, 59, 59] // #ff3b3b
   let t = 0
+  let last = 0
   const fov = 300
   const wide = 20
   const depth = 30
   const wave = (X: number, Z: number) =>
-    Math.sin(X * 0.4 + t) * 10 + Math.cos(Z * 0.32 + t * 0.9) * 12
+    Math.sin(X * 0.4 + t) * 10 + Math.cos(Z * 0.32 - t * 0.9) * 12
 
-  const loop = () => {
+  ctx.lineJoin = 'round'
+  ctx.lineCap = 'round'
+
+  const loop = (now: number) => {
     if (!alive) {
       return
     }
+
+    if (last === 0) {
+      last = now
+    }
+
+    let dt = (now - last) / 1000
+    last = now
+
+    if (dt > 0.05) {
+      dt = 0.05
+    }
+
     const [r, g, b] = acc
     const cx = w / 2
     const horizon = h * 0.52
@@ -46,7 +62,7 @@ const initGrid = (cv: HTMLCanvasElement) => {
 
     ctx.fillStyle = '#08080a'
     ctx.fillRect(0, 0, w, h)
-    t += 0.045
+    t += dt * 2.7
     const scroll = (t * 2) % 4
 
     // depth lines (constant X)
@@ -59,7 +75,7 @@ const initGrid = (cv: HTMLCanvasElement) => {
           continue
         }
         const X = xi * 4
-        const p = proj(X, wave(X, Z + scroll), Z)
+        const p = proj(X, wave(X, Z), Z)
         started ? ctx.lineTo(p.x, p.y) : ctx.moveTo(p.x, p.y)
         started = true
       }
@@ -77,7 +93,7 @@ const initGrid = (cv: HTMLCanvasElement) => {
       ctx.beginPath()
       for (let xi = -wide; xi <= wide; xi++) {
         const X = xi * 4
-        const p = proj(X, wave(X, Z + scroll), Z)
+        const p = proj(X, wave(X, Z), Z)
         xi === -wide ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y)
       }
       const near = Math.max(0, 1 - Z / (depth * 4))
@@ -88,7 +104,7 @@ const initGrid = (cv: HTMLCanvasElement) => {
 
     requestAnimationFrame(loop)
   }
-  loop()
+  requestAnimationFrame(loop)
 
   return () => window.removeEventListener('resize', resize)
 }
