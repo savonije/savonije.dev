@@ -1,28 +1,27 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, ref } from 'vue'
 
-const canvas = ref<HTMLCanvasElement | null>(null)
-let alive = false
-let cleanup: (() => void) | null = null
+type GridControls = {
+  start: () => void
+  stop: () => void
+  destroy: () => void
+}
 
-// Futuristic wireframe-terrain hero animation (variant 1b), black & red.
-const initGrid = (cv: HTMLCanvasElement) => {
+const canvas = ref<HTMLCanvasElement | null>(null)
+const playing = ref(true)
+let controls: GridControls | null = null
+
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+const initGrid = (cv: HTMLCanvasElement): GridControls | null => {
   const ctx = cv.getContext('2d')
   if (!ctx) {
-    return () => {}
+    return null
   }
   const dpr = Math.min(window.devicePixelRatio || 1, 2)
   let w = 0
   let h = 0
-  const resize = () => {
-    w = cv.clientWidth
-    h = cv.clientHeight
-    cv.width = w * dpr
-    cv.height = h * dpr
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-  }
-  resize()
-  window.addEventListener('resize', resize)
+  let frame = 0
 
   const acc: [number, number, number] = [255, 59, 59] // #ff3b3b
   let t = 0
@@ -33,25 +32,7 @@ const initGrid = (cv: HTMLCanvasElement) => {
   const wave = (X: number, Z: number) =>
     Math.sin(X * 0.4 + t) * 10 + Math.cos(Z * 0.32 - t * 0.9) * 12
 
-  ctx.lineJoin = 'round'
-  ctx.lineCap = 'round'
-
-  const loop = (now: number) => {
-    if (!alive) {
-      return
-    }
-
-    if (last === 0) {
-      last = now
-    }
-
-    let dt = (now - last) / 1000
-    last = now
-
-    if (dt > 0.05) {
-      dt = 0.05
-    }
-
+  const draw = () => {
     const [r, g, b] = acc
     const cx = w / 2
     const horizon = h * 0.52
@@ -62,7 +43,6 @@ const initGrid = (cv: HTMLCanvasElement) => {
 
     ctx.fillStyle = '#08080a'
     ctx.fillRect(0, 0, w, h)
-    t += dt * 2.7
     const scroll = (t * 2) % 4
 
     // depth lines (constant X)
@@ -101,36 +81,118 @@ const initGrid = (cv: HTMLCanvasElement) => {
       ctx.lineWidth = 0.6 + near * 1.6
       ctx.stroke()
     }
-
-    requestAnimationFrame(loop)
   }
-  requestAnimationFrame(loop)
 
-  return () => window.removeEventListener('resize', resize)
+  const resize = () => {
+    w = cv.clientWidth
+    h = cv.clientHeight
+    cv.width = w * dpr
+    cv.height = h * dpr
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    ctx.lineJoin = 'round'
+    ctx.lineCap = 'round'
+    // Resizing clears the canvas, so repaint the current frame immediately.
+    draw()
+  }
+  resize()
+  window.addEventListener('resize', resize)
+
+  const loop = (now: number) => {
+    if (last === 0) {
+      last = now
+    }
+
+    let dt = (now - last) / 1000
+    last = now
+
+    if (dt > 0.05) {
+      dt = 0.05
+    }
+
+    t += dt * 2.7
+    draw()
+    frame = requestAnimationFrame(loop)
+  }
+
+  const start = () => {
+    if (frame !== 0) {
+      return
+    }
+    last = 0
+    frame = requestAnimationFrame(loop)
+  }
+
+  const stop = () => {
+    if (frame !== 0) {
+      cancelAnimationFrame(frame)
+      frame = 0
+    }
+  }
+
+  const destroy = () => {
+    stop()
+    window.removeEventListener('resize', resize)
+  }
+
+  return { start, stop, destroy }
+}
+
+const setPlaying = (next: boolean) => {
+  playing.value = next
+  if (controls == null) {
+    return
+  }
+  next ? controls.start() : controls.stop()
+}
+
+const toggle = () => setPlaying(!playing.value)
+
+// Pause whenever the user turns on the OS "reduce motion" setting.
+const onReducedMotionChange = (e: MediaQueryListEvent) => {
+  if (e.matches) {
+    setPlaying(false)
+  }
 }
 
 onMounted(() => {
-  alive = true
+  if (reducedMotion.matches) {
+    playing.value = false
+  }
+  reducedMotion.addEventListener('change', onReducedMotionChange)
   if (canvas.value != null) {
-    cleanup = initGrid(canvas.value)
+    controls = initGrid(canvas.value)
+    if (controls != null && playing.value) {
+      controls.start()
+    }
   }
 })
 
 onBeforeUnmount(() => {
-  alive = false
-  if (cleanup != null) {
-    cleanup()
+  reducedMotion.removeEventListener('change', onReducedMotionChange)
+  if (controls != null) {
+    controls.destroy()
   }
 })
 </script>
 
 <template>
   <section class="fixed inset-0 z-0 overflow-hidden bg-ink">
-    <canvas ref="canvas" class="absolute inset-0 z-10 h-full w-full"></canvas>
-    <div class="hero-vignette pointer-events-none absolute inset-0 z-20"></div>
+    <canvas ref="canvas" class="absolute inset-0 z-10 size-full" />
+    <div class="hero-vignette pointer-events-none absolute inset-0 z-20" aria-hidden="true" />
     <div
       class="hero-scanlines pointer-events-none absolute inset-0 z-30 opacity-55 mix-blend-multiply"
-    ></div>
+      aria-hidden="true"
+    />
+
+    <button
+      type="button"
+      :aria-pressed="!playing"
+      :aria-label="playing ? 'Pauzeer animatie' : 'Speel animatie af'"
+      class="absolute right-[clamp(20px,4vw,44px)] top-[clamp(20px,4vw,44px)] z-50 flex size-7 items-center justify-center rounded-full font-mono text-[10px] text-fog-dim transition duration-200 hover:text-fog-soft focus-visible:text-fog-soft"
+      @click="toggle"
+    >
+      <span aria-hidden="true">{{ playing ? '❚❚' : '▶' }}</span>
+    </button>
 
     <div
       class="animate-hero-in absolute inset-0 z-40 flex flex-col items-start justify-end p-[clamp(28px,6vw,88px)] text-left font-display"
